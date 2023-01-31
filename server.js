@@ -20,6 +20,15 @@ app.get("/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "public/notes.html"));
 });
 
+// GET request for notes
+app.get("/api/notes", (req, res) => {
+    fs.readFile("./db/db.json", "utf8", (err, data) =>{
+        const parseNotes = JSON.parse(data);
+
+        res.json(parseNotes);
+    })
+})
+
 // POST request to save notes
 app.post("/api/notes", (req, res) => {
     const { title, text } = req.body;
@@ -43,6 +52,7 @@ app.post("/api/notes", (req, res) => {
                 : console.log("Note has been written to JSON file")
         );
     });
+    res.json(newNote);
     }
 });
 
