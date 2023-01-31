@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const fs = require("fs");
+const uuid = require("uuid");
 
 const PORT = 3001;
 
@@ -9,11 +10,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static("public"));
-
-// GET request for homepage
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public/index.html"));
-});
 
 // GET request for notes page
 app.get("/notes", (req, res) => {
@@ -36,7 +32,8 @@ app.post("/api/notes", (req, res) => {
     if (title && text) {
         const newNote = {
             title,
-            text
+            text,
+            note_id: uuid.v4()
         };
 
     fs.readFile("./db/db.json", "utf8", (err, data) => {
@@ -54,6 +51,11 @@ app.post("/api/notes", (req, res) => {
     });
     res.json(newNote);
     }
+});
+
+// GET request for homepage
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
 // creates server
