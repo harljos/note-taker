@@ -33,7 +33,7 @@ app.post("/api/notes", (req, res) => {
         const newNote = {
             title,
             text,
-            note_id: uuid.v4()
+            id: uuid.v4()
         };
 
     fs.readFile("./db/db.json", "utf8", (err, data) => {
@@ -43,14 +43,37 @@ app.post("/api/notes", (req, res) => {
 
         const noteString = JSON.stringify(parseNotes);
 
-        fs.writeFile("./db/db.json", noteString, (err) =>
-            err
-                ? console.log(err)
-                : console.log("Note has been written to JSON file")
-        );
+        fs.writeFile("./db/db.json", noteString, (err) => {
+            if (err) {
+                console.log(err);
+            }
+        });
     });
     res.json(newNote);
     }
+});
+
+// DELETE request for note with given id
+app.delete("/api/notes/:id", (req, res) => {
+    fs.readFile("./db/db.json", "utf8", (err, data) => {
+        const parseNotes = JSON.parse(data);
+
+        let count = 0;
+        parseNotes.forEach(note => {
+            if(note.id === req.params.id) {
+                parseNotes.splice(count, 1);
+                const noteString = JSON.stringify(parseNotes);
+
+                fs.writeFile("./db/db.json", noteString, (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                })
+                res.json(note);
+            }
+            count++;
+        });
+    });
 });
 
 // GET request for homepage
